@@ -24,15 +24,57 @@ public class Screen {
 	private int displayedHeight = Constants.CANVAS_HEIGHT;
 	
 	
-	public void changeZoom(int x){
+	public void changeZoom(int factor){
 		
-		zoom = zoom + x;
-		if(zoom < 1){
+		//find screen center
+		int centerX = posX + (getWidthInWorld() / 2);
+		int centerY = posY + (getHeightInWorld() / 2);
+		
+		//apply changes
+		zoom = zoom * factor;
+		zoom = zoom / 100;
+
+		//this hack fights rounding errors and out of bounds situations
+		if(zoom < 1){		
 			zoom = 1;
 		}
+		if(factor > 100){
+			zoom++;
+		}
+		
+		//adjust screen so that its center stays the same
+		posX = centerX - (getWidthInWorld() / 2);
+		posY = centerY - (getHeightInWorld() / 2);
+		ensurePositionWithinBounds();
+		
+		
 			
 	}
 	
+	public void moveX(int x){
+		this.posX += x * zoom;
+		ensurePositionWithinBounds();
+	}
+	
+	public void moveY(int y){
+		this.posY += y * zoom;
+		ensurePositionWithinBounds();
+	}
+	
+	private void ensurePositionWithinBounds(){
+		if(posX < 0) {
+			posX = 0;
+		}
+		if(posX >= Constants.WORLD_WIDTH) {
+			posX = Constants.WORLD_WIDTH;
+		}
+		if(posY < 0) {
+			posY = 0;
+		}
+		if(posY >= Constants.WORLD_HEIGHT) {
+			posY = Constants.WORLD_HEIGHT;
+		}
+	}
 	
 	public int getWidthInWorld(){
 		return displayedWidth * zoom;

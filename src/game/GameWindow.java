@@ -2,9 +2,15 @@ package game;
 
 import java.awt.Graphics;
 
+import javax.swing.Action;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 
 /**
  * The game's main Window. It holds an extended JPanel as a canvas on which
@@ -44,6 +50,46 @@ public class GameWindow extends JFrame{
 	    this.addKeyListener(main);
 	    
 	    
+	    //radio button group to select editor action
+	    ButtonGroup buttonGroup = new ButtonGroup();
+	    
+	    //button for creating standard sized blocks
+	    JRadioButton standardButton = new JRadioButton("standard size");
+	    standardButton.setSelected(true);
+	    buttonGroup.add(standardButton);
+	    leftSidePanel.add(standardButton);
+	    
+	    //button for creating custom sized blocks
+	    JRadioButton customButton = new JRadioButton("custom size");
+	    buttonGroup.add(customButton);
+	    leftSidePanel.add(customButton);
+	    
+	    //button for creating blocks by dragging the mouse
+	    JRadioButton dragButton = new JRadioButton("drag mouse");
+	    buttonGroup.add(dragButton);
+	    leftSidePanel.add(dragButton);
+	    
+	    //button for moving blocks
+	    JRadioButton moveButton = new JRadioButton("move blocks");
+	    buttonGroup.add(moveButton);
+	    leftSidePanel.add(moveButton);
+	    moveButton.setActionCommand("test");
+	    
+	    //input fields for custom size
+	    JLabel widthLabel = new JLabel("Width:");
+	    leftSidePanel.add(widthLabel);
+	    
+	    JTextField widthField = new JTextField(10);	 
+	    leftSidePanel.add(widthField);
+	    
+	    JLabel heightLabel = new JLabel("Height:");
+	    leftSidePanel.add(heightLabel);
+	    
+	    JTextField heightField = new JTextField(10);	    
+	    leftSidePanel.add(heightField);
+	    
+	    
+	    //now display everything
 	    pack();
 	    setVisible(true);
 	    

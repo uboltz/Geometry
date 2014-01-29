@@ -34,20 +34,23 @@ public class GraphicsEngine {
 		
 		for(PhysicalObject object: level.objects){
 			
-			if(screen.contains(object.posX, object.posY)
-					||screen.contains(object.posX + object.width, object.posY)
-					||screen.contains(object.posX, object.posY + object.height)
-					||screen.contains(object.posX + object.width, object.posY + object.height)){
-				
-				if(object.isRectangle){
-					
+			//for now we only care about rectangles
+			//TODO change that
+			if(object.isRectangle){
+
+				//draw object if one of its corners is inside the screen area
+				if(screen.contains(object.posX, object.posY)
+						||screen.contains(object.posX + object.width, object.posY)
+						||screen.contains(object.posX, object.posY + object.height)
+						||screen.contains(object.posX + object.width, object.posY + object.height)){
+
 					g.setColor(Color.BLACK);
 					g.fillRect(
 							(object.posX - screen.posX) / screen.zoom, 
 							(object.posY - screen.posY) / screen.zoom, 
 							(object.width) / screen.zoom, 
 							(object.height) / screen.zoom);
-					
+
 					g.setColor(Color.BLACK);
 					g.drawRect(
 							(object.posX - screen.posX) / screen.zoom, 
@@ -55,11 +58,9 @@ public class GraphicsEngine {
 							(object.width) / screen.zoom, 
 							(object.height) / screen.zoom);
 				}
-				
 
-				
 			}
-			
+
 		}
 		
 	}

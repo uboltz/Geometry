@@ -82,33 +82,19 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 	public void keyPressed(KeyEvent e) {
 		
 		switch(e.getKeyCode()) {
-		case KeyEvent.VK_LEFT: screen.posX--;
+		case KeyEvent.VK_LEFT: screen.moveX(-10);
 		break;
-		case KeyEvent.VK_RIGHT: screen.posX++;
+		case KeyEvent.VK_RIGHT: screen.moveX(+10);
 		break;
-		case KeyEvent.VK_UP: screen.posY--;
+		case KeyEvent.VK_UP: screen.moveY(-10);
 		break;
-		case KeyEvent.VK_DOWN: screen.posY++;
+		case KeyEvent.VK_DOWN: screen.moveY(+10);
 		break;
-		case KeyEvent.VK_Q: screen.changeZoom(-10);
+		case KeyEvent.VK_Q: screen.changeZoom(90);
 		break;
-		case KeyEvent.VK_A: screen.changeZoom(+10);
+		case KeyEvent.VK_A: screen.changeZoom(110);
 		break;
-		}
-		
-		if(screen.posX < 0) {
-			screen.posX = 0;
-		}
-		if(screen.posX >= Constants.WORLD_WIDTH) {
-			screen.posX = Constants.WORLD_WIDTH;
-		}
-		if(screen.posY < 0) {
-			screen.posY = 0;
-		}
-		if(screen.posY >= Constants.WORLD_HEIGHT) {
-			screen.posY = Constants.WORLD_HEIGHT;
-		}
-		
+		}		
 		
 		drawScreen();
 

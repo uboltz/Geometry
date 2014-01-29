@@ -7,6 +7,9 @@ import game.Constants;
 
 public class Block extends PhysicalObject{
 		
+	/*
+	 * Constructs square block using standard block size.
+	 */
 	public Block(int x, int y){
 		
 		this.posX = x;
@@ -18,6 +21,9 @@ public class Block extends PhysicalObject{
 		this.isRectangle = true;
 	}
 	
+	/*
+	 * Constructs a rectangular block with the specified dimensions.
+	 */
 	public Block(int x, int y, int width, int height){
 		
 		this.posX = x;
