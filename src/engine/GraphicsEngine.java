@@ -39,24 +39,24 @@ public class GraphicsEngine {
 			if(object.isRectangle){
 
 				//draw object if one of its corners is inside the screen area
-				if(screen.contains(object.posX, object.posY)
-						||screen.contains(object.posX + object.width, object.posY)
-						||screen.contains(object.posX, object.posY + object.height)
-						||screen.contains(object.posX + object.width, object.posY + object.height)){
+				if(screen.containsInWorld(object.posX, object.posY)
+						||screen.containsInWorld(object.posX + object.width, object.posY)
+						||screen.containsInWorld(object.posX, object.posY + object.height)
+						||screen.containsInWorld(object.posX + object.width, object.posY + object.height)){
 
 					g.setColor(Color.BLACK);
 					g.fillRect(
-							(object.posX - screen.posX) / screen.zoom, 
-							(object.posY - screen.posY) / screen.zoom, 
-							(object.width) / screen.zoom, 
-							(object.height) / screen.zoom);
+							screen.worldToScreenX(object.posX),
+							screen.worldToScreenY(object.posY),							
+							object.width / screen.zoom, 
+							object.height / screen.zoom);
 
 					g.setColor(Color.BLACK);
 					g.drawRect(
-							(object.posX - screen.posX) / screen.zoom, 
-							(object.posY - screen.posY) / screen.zoom, 
-							(object.width) / screen.zoom, 
-							(object.height) / screen.zoom);
+							screen.worldToScreenX(object.posX),
+							screen.worldToScreenY(object.posY),							
+							object.width / screen.zoom, 
+							object.height / screen.zoom);
 				}
 
 			}

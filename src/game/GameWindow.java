@@ -46,17 +46,18 @@ public class GameWindow extends JFrame{
 	    horizontalPanel.add(canvas);
 	    canvasGraphics = canvas.getGraphics();
 	    
-	    //make it so that the canvas is focused when clicked on
+	    //make it so that the canvas is focused when clicked on, 
+	    //otherwise KeyEvents might be send to a different component
 	    canvas.addMouseListener(new MouseAdapter(){
 	    	public void mousePressed(MouseEvent e){
 	    		e.getComponent().requestFocusInWindow();
 	    	}
 	    });
 	    	       
+	    //register listeners
 	    canvas.addMouseListener(main);
 	    canvas.addMouseMotionListener(main);
 	    canvas.addKeyListener(main);
-	    this.addKeyListener(main);
 	    
 	    
 	    //radio button group to select editor action

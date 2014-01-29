@@ -6,20 +6,6 @@ import java.awt.Graphics;
 import game.Constants;
 
 public class Block extends PhysicalObject{
-		
-	/*
-	 * Constructs square block using standard block size.
-	 */
-	public Block(int x, int y){
-		
-		this.posX = x;
-		this.posY = y;
-		
-		this.width = Constants.BLOCK_SIZE;
-		this.height = Constants.BLOCK_SIZE;
-		
-		this.isRectangle = true;
-	}
 	
 	/*
 	 * Constructs a rectangular block with the specified dimensions.
@@ -33,6 +19,11 @@ public class Block extends PhysicalObject{
 		this.height = height;
 		
 		this.isRectangle = true;
+		
+		this.isMovable = true;
+		this.hasGravity = true;
+		this.hasPhysics = true;
+		
 	}
 	
 	

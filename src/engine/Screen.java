@@ -16,14 +16,19 @@ public class Screen {
 	//position in game world
 	public int posX = 0, posY = 0;
 	
-	//TODO add comment
-	public int zoom = 1000;
+	//world pixels per screen pixel
+	public int zoom = Constants.STANDARD_ZOOM;
 	
 	//screen size on canvas
 	private int displayedWidth = Constants.CANVAS_WIDTH;
 	private int displayedHeight = Constants.CANVAS_HEIGHT;
 	
+	public Grid grid = new Grid(Constants.GRID_CELL_SIZE);
 	
+	
+	/*
+	 * Changes the zoom by a factor in percent
+	 */
 	public void changeZoom(int factor){
 		
 		//find screen center
@@ -46,45 +51,97 @@ public class Screen {
 		posX = centerX - (getWidthInWorld() / 2);
 		posY = centerY - (getHeightInWorld() / 2);
 		ensurePositionWithinBounds();
-		
-		
 			
 	}
 	
+	/*
+	 * moves the screen horizontally by the specified number of pixels on screen
+	 */
 	public void moveX(int x){
 		this.posX += x * zoom;
 		ensurePositionWithinBounds();
 	}
 	
+	/*
+	 * moves the screen vertically by the specified number of pixels on screen
+	 */
 	public void moveY(int y){
 		this.posY += y * zoom;
 		ensurePositionWithinBounds();
 	}
 	
+	/*
+	 * If the current screen position is not inside the world, it is set
+	 * to be on the worlds border.
+	 */
 	private void ensurePositionWithinBounds(){
-		if(posX < 0) {
-			posX = 0;
+		
+		if(posX <= -Constants.WORLD_WIDTH) {
+			posX = -Constants.WORLD_WIDTH;
 		}
 		if(posX >= Constants.WORLD_WIDTH) {
 			posX = Constants.WORLD_WIDTH;
 		}
-		if(posY < 0) {
-			posY = 0;
+		if(posY <= -Constants.WORLD_HEIGHT) {
+			posY = -Constants.WORLD_HEIGHT;
 		}
 		if(posY >= Constants.WORLD_HEIGHT) {
 			posY = Constants.WORLD_HEIGHT;
 		}
 	}
 	
+	public int worldToScreenX(int x){
+		return (x - posX) / zoom; 
+	}
+	
+	public int worldToScreenY(int y){
+		return (y - posY) / zoom; 
+	}
+	
+	public int screenToCellX(int x){
+		return grid.getCellX(screenToWorldX(x));
+	}
+	
+	public int screenToCellY(int y){
+		return grid.getCellY(screenToWorldY(y));
+	}
+	
+	
+	/*
+	 * takes an x coordinate from the screen and returns the corresponding
+	 * coordinate in the world
+	 */
+	public int screenToWorldX(int x){
+		return x * zoom + posX;
+	}
+	
+	/*
+	 * takes ay y coordinate from the screen and returns the corresponding
+	 * coordinate in the world
+	 */
+	public int screenToWorldY(int y){
+		return y * zoom + posY;
+	}
+	
+	
+	/*
+	 * the width of the part of the world that is displayed on screen
+	 */
 	public int getWidthInWorld(){
 		return displayedWidth * zoom;
 	}
 	
+	/*
+	 * the height of the part of the world that is displayed on screen
+	 */
 	public int getHeightInWorld(){
 		return displayedHeight * zoom;
 	}
 	
-	public boolean contains(int x, int y){
+	/*
+	 * Is a given point in the world on screen right now?
+	 */
+	public boolean containsInWorld(int x, int y){
 		
 		Rectangle r = new Rectangle(posX, posY, getWidthInWorld(), getHeightInWorld());
 		

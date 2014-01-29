@@ -2,6 +2,16 @@ package world;
 
 import java.awt.Graphics;
 
+/**
+ * As of now, this abstract class doesn't do much. It is mostly here as a reminder
+ * for some possible later features.
+ * It is meant to be the superclass of all objects in the game that are affected
+ * by physics.
+ * 
+ * 
+ * @author Hans Maulwurf
+ *
+ */
 public abstract class PhysicalObject {
 	
 	public int posX, posY;
@@ -18,7 +28,7 @@ public abstract class PhysicalObject {
 	
 	public boolean isRectangle, isCircle, hasBitmap;
 	
-	public boolean hasCollisions, isMovable;
+	public boolean hasPhysics, hasCollisions, isMovable, hasGravity;
 	
 	public int collisionElasticity;
 	
