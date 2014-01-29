@@ -1,6 +1,8 @@
 package game;
 
 import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.Action;
 import javax.swing.BoxLayout;
@@ -43,6 +45,13 @@ public class GameWindow extends JFrame{
 	    Canvas canvas = new Canvas();
 	    horizontalPanel.add(canvas);
 	    canvasGraphics = canvas.getGraphics();
+	    
+	    //make it so that the canvas is focused when clicked on
+	    canvas.addMouseListener(new MouseAdapter(){
+	    	public void mousePressed(MouseEvent e){
+	    		e.getComponent().requestFocusInWindow();
+	    	}
+	    });
 	    	       
 	    canvas.addMouseListener(main);
 	    canvas.addMouseMotionListener(main);
@@ -53,9 +62,9 @@ public class GameWindow extends JFrame{
 	    //radio button group to select editor action
 	    ButtonGroup buttonGroup = new ButtonGroup();
 	    
+	    
 	    //button for creating standard sized blocks
 	    JRadioButton standardButton = new JRadioButton("standard size");
-	    standardButton.setSelected(true);
 	    buttonGroup.add(standardButton);
 	    leftSidePanel.add(standardButton);
 	    
@@ -73,7 +82,6 @@ public class GameWindow extends JFrame{
 	    JRadioButton moveButton = new JRadioButton("move blocks");
 	    buttonGroup.add(moveButton);
 	    leftSidePanel.add(moveButton);
-	    moveButton.setActionCommand("test");
 	    
 	    //input fields for custom size
 	    JLabel widthLabel = new JLabel("Width:");
@@ -93,6 +101,12 @@ public class GameWindow extends JFrame{
 	    pack();
 	    setVisible(true);
 	    
+	}
+	
+	private class test  {
+		
+		
+		
 	}
 
 }
