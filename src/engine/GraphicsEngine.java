@@ -5,8 +5,9 @@ import game.Constants;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import world.Block;
 import world.Level;
-import world.PhysicalObject;
+import world.WorldObject;
 
 /**
  * This is where information about the level is processed into an image that can
@@ -26,39 +27,40 @@ public class GraphicsEngine {
 		this.screen = screen;
 		
 	}
-	
+
 	public void drawScreen(Graphics g){
-		
+
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);
-		
-		for(PhysicalObject object: level.objects){
-			
-			//for now we only care about rectangles
-			//TODO change that
-			if(object.isRectangle){
 
-				//draw object if one of its corners is inside the screen area
-				if(screen.containsInWorld(object.posX, object.posY)
-						||screen.containsInWorld(object.posX + object.width, object.posY)
-						||screen.containsInWorld(object.posX, object.posY + object.height)
-						||screen.containsInWorld(object.posX + object.width, object.posY + object.height)){
+		for(Block block: level.blocks){
 
-					g.setColor(Color.BLACK);
-					g.fillRect(
-							screen.worldToScreenX(object.posX),
-							screen.worldToScreenY(object.posY),							
-							object.width / screen.zoom, 
-							object.height / screen.zoom);
+			//draw object if one of its corners is inside the screen area
+			if(screen.containsInWorld(block.posX, block.posY)
+					||screen.containsInWorld(block.posX + block.width, block.posY)
+					||screen.containsInWorld(block.posX, block.posY + block.height)
+					||screen.containsInWorld(block.posX + block.width, block.posY + block.height)){
 
-					g.setColor(Color.BLACK);
-					g.drawRect(
-							screen.worldToScreenX(object.posX),
-							screen.worldToScreenY(object.posY),							
-							object.width / screen.zoom, 
-							object.height / screen.zoom);
+				
+				if(block.isMovable){
+					g.setColor(Color.BLUE);
 				}
+				else {
+					g.setColor(Color.BLACK);
+				}				
+				
+				g.fillRect(
+						screen.worldToScreenX(block.posX),
+						screen.worldToScreenY(block.posY),							
+						block.width / screen.zoom, 
+						block.height / screen.zoom);
 
+				g.setColor(Color.BLACK);
+				g.drawRect(
+						screen.worldToScreenX(block.posX),
+						screen.worldToScreenY(block.posY),							
+						block.width / screen.zoom, 
+						block.height / screen.zoom);
 			}
 
 		}

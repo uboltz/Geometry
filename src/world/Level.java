@@ -20,74 +20,38 @@ import java.util.List;
 public class Level {
 	
 	//everything in the level
-	public List<PhysicalObject> objects = new ArrayList<PhysicalObject>();
+	public List<Block> blocks = new ArrayList<Block>();
 	
 	
-	/*
-	 * create a block from coordinates in the world
-	 */
-	public void addBlock(int x, int y, int width, int height){
-		
-		System.out.println("adding new Block at " + x + " " + y);
-		objects.add(new Block(x,y, width, height));
+	public void addBlock(Block block){
+		blocks.add(block);
 	}
 	
-	/*
-	 * create a block from a screen and coordinate on that screen
-	 */
-	public void addBlock(Screen screen, int x, int y, int width, int height){
-		x = screen.screenToWorldX(x);
-		y = screen.screenToWorldY(y);
-		width = width * screen.zoom;
-		height = height * screen.zoom;
-		addBlock(x,y, screen.grid.cellSize, screen.grid.cellSize); 
-	}
 	
-	/*
-	 * create a block that fills exactly one cell in the screen's grid
-	 */
-	public void createStandardBlock(Screen screen, int x, int y){
-		addBlock(
-				screen.screenToCellX(x), 
-				screen.screenToCellY(y),
-				screen.grid.cellSize,
-				screen.grid.cellSize);
-		
-	}
 	
 	/*
 	 * delete all blocks that contain the specified point in the world
 	 */
 	public void deleteBlocksAt(int x, int y){
 			
-		List<PhysicalObject> toBeRemoved = new ArrayList<PhysicalObject>();
-		
-		for(PhysicalObject object: objects){
-			
+		List<Block> toBeRemoved = new ArrayList<Block>();
+
+		for(Block block: blocks){
+
 			Rectangle r = new Rectangle(
-					object.posX,
-					object.posY,
-					object.width,
-					object.height);
+					block.posX,
+					block.posY,
+					block.width,
+					block.height);
 
 			if(r.contains(x,y)){
-				toBeRemoved.add(object);
+				toBeRemoved.add(block);
 			}
 		}
-		
-		for(PhysicalObject object: toBeRemoved){
-			objects.remove(object);
+
+		for(WorldObject object: toBeRemoved){
+			blocks.remove(object);
 		}
 	}
 	
-	/*
-	 * delete all blocks that contain the specified point on the given screen
-	 */
-	public void deleteBlocksAt(Screen screen, int x, int y){
-		
-		x = screen.screenToWorldX(x);
-		y = screen.screenToWorldY(y);
-		deleteBlocksAt(x,y);
-	}
-
 }

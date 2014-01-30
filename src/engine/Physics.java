@@ -1,8 +1,9 @@
 package engine;
 
 import game.Constants;
+import world.Block;
 import world.Level;
-import world.PhysicalObject;
+import world.WorldObject;
 
 public class Physics {
 	
@@ -20,25 +21,51 @@ public class Physics {
 	 * time passing
 	 */
 	public void performFrame(){
+
+		for(Block block: level.blocks){
+
+			if(block.isMovable && block.hasGravity){
+				move(block, 0 , gravity);
+			}	
+
+		}
+
+	}
+	
+
+	private void move(Block block, int x, int y){
 		
-		for(PhysicalObject object: level.objects){
-			
-			if(object.hasPhysics){
+		int newX = block.posX + x;
+		int newY = block.posY + y;
+		
+		if(!collidesWithAnything(block, newX, newY)){
+			block.posX = newX;
+			block.posY = newY;
+		}
 				
-				if(object.isMovable && object.hasGravity){
-					move(object, 0 , gravity);
-				}
+	}
+	
+	private boolean collidesWithAnything(Block block, int x, int y){
+		
+		boolean didCollide = false;
+		
+		for(Block otherBlock: level.blocks){
+			
+			if(block != otherBlock
+					&& (otherBlock.contains(x,y)
+					|| otherBlock.contains(x + block.width - 1 ,y)
+					|| otherBlock.contains(x,y + block.height - 1)
+					|| otherBlock.contains(x + block.width - 1, y + block.height - 1))){
+				
+				didCollide = true;
+				
 				
 			}
 			
 		}
 		
-	}
-	
-	//TODO add collisions
-	private void move(PhysicalObject object, int x, int y){
-		object.posX += x;
-		object.posY += y;
+		
+		return didCollide;
 	}
 
 }

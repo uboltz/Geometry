@@ -13,7 +13,7 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import world.Level;
-import world.PhysicalObject;
+import world.WorldObject;
 
 import engine.GraphicsEngine;
 import engine.Physics;
@@ -21,22 +21,16 @@ import engine.Screen;
 
 public class Main implements MouseListener, MouseMotionListener, KeyListener{
 
-	public static final int PLAYING = 0;
-	public static final int CREATE_STANDARD = 1;
-	public static final int CREATE_CUSTOM = 2;
-	public static final int CREATE_DRAGGING = 3;
-	public static final int MOVE = 4;
-	public static final int DELETE = 5;
-	public static final int QUITTING = 6;
+	public static final int PLAYING = 0, QUITTING = 1, PAUSED = 2;
 	
-	
-	private int state = CREATE_STANDARD;
+	private int state = PAUSED;
 	
 	private GameWindow gameWindow;
 	private GraphicsEngine engine;
 	private Physics physics;
 	private Level level;
 	private Screen screen;
+	private LevelEditor editor;
 	
 	public Main(){
 		
@@ -44,6 +38,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 		level = new Level();
 		engine = new GraphicsEngine(level, screen);
 		physics = new Physics(level);
+		editor = new LevelEditor(level, screen);
 		
 		gameWindow = new GameWindow(this);
 		
@@ -56,6 +51,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 		
 		m.play();
 		
+		
 	}
 	
 	
@@ -66,12 +62,14 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 		
 		//load level
 
-		Date lastTime = new Date();
+		FrameTimer frameTimer = new FrameTimer();
 		
 		while(state != QUITTING){
 
 			if(state == PLAYING){
 
+				System.out.println("playing");
+				
 				//process user input
 
 				//process AI and physics
@@ -81,9 +79,25 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 				drawScreen();
 
 				//draw overlay
-
 			}
-
+			
+			
+			frameTimer.waitForFrameEnd();
+			
+		}
+	}
+	
+	
+	
+	private class FrameTimer {
+		
+		private Date lastTime;
+		
+		public FrameTimer(){
+			lastTime = new Date();
+		}
+		
+		public void waitForFrameEnd(){
 			long remainingTime = (1000 / Constants.FRAMES_PER_SECOND) - (new Date().getTime() - lastTime.getTime());
 			if(remainingTime > 0) {
 				try {
@@ -91,12 +105,12 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				lastTime = new Date();
-//				System.out.println("time: " + lastTime.getTime() + " remainder:" + remainingTime);
 			}
+			lastTime = new Date();
+			System.out.println("time: " + lastTime.getTime() + " remainder:" + remainingTime);	
 		}
 	}
-	
+
 	private void drawScreen(){
 		engine.drawScreen(gameWindow.canvasGraphics);
 		gameWindow.repaint();
@@ -107,15 +121,14 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 	@Override
 	public void mousePressed(MouseEvent e) {
 		
-		switch(state){
-		case CREATE_STANDARD : level.createStandardBlock(screen, e.getX(), e.getY());
-		break;		
-		case DELETE : level.deleteBlocksAt(screen, e.getX(), e.getY());
-		break;
-		
+		if(state == PLAYING){
+			state = PAUSED;
 		}
-
-		drawScreen();
+		else {
+			editor.mousePressed(e);
+			drawScreen();
+		}
+		
 		
 	}
 	
@@ -123,28 +136,18 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 	@Override
 	public void keyPressed(KeyEvent e) {
 		
-		switch(e.getKeyCode()) {
-		case KeyEvent.VK_SPACE: state = PLAYING;
-		break;
-		case KeyEvent.VK_LEFT: screen.moveX(-10);
-		break;
-		case KeyEvent.VK_RIGHT: screen.moveX(+10);
-		break;
-		case KeyEvent.VK_UP: screen.moveY(-10);
-		break;
-		case KeyEvent.VK_DOWN: screen.moveY(+10);
-		break;
-		case KeyEvent.VK_Q: screen.changeZoom(90);
-		break;
-		case KeyEvent.VK_A: screen.changeZoom(110);
-		break;
+		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+
+			if(state == PLAYING) {
+				state = PAUSED;
+			}
+			else{
+				state = PLAYING;
+			}
+
+		}	
 		
-		case KeyEvent.VK_S: state = CREATE_STANDARD;
-		break;
-		case KeyEvent.VK_D: state = DELETE;
-		break;
-		
-		}		
+		editor.keyPressed(e);
 		
 		drawScreen();
 

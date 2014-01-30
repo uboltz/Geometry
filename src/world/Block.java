@@ -2,15 +2,18 @@ package world;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 import game.Constants;
 
-public class Block extends PhysicalObject{
+public class Block extends WorldObject{
+	
+	public int width, height;
 	
 	/*
 	 * Constructs a rectangular block with the specified dimensions.
 	 */
-	public Block(int x, int y, int width, int height){
+	private Block(int x, int y, int width, int height){
 		
 		this.posX = x;
 		this.posY = y;
@@ -18,22 +21,17 @@ public class Block extends PhysicalObject{
 		this.width = width;
 		this.height = height;
 		
-		this.isRectangle = true;
-		
 		this.isMovable = true;
 		this.hasGravity = true;
-		this.hasPhysics = true;
 		
 	}
 	
+	public Block(){};
 	
-	public void draw(Graphics g, int x, int y){
-		
-		g.setColor(Color.BLUE);
-		g.fillRect(x, y, width, height);
-		g.setColor(Color.WHITE);
-		g.drawRect(x, y, width, height);
-		
+	
+	public boolean contains(int x, int y){
+		return new Rectangle(posX, posY, width, height).contains(x,y);
 	}
+	
 
 }
