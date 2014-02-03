@@ -54,4 +54,31 @@ public class Level {
 		}
 	}
 	
+	public List<Block> getBlocksInRectangle(int x, int y, int width, int height){
+		
+		List<Block> blocksInRectangle = new ArrayList<Block>();
+		
+		for(Block block: blocks){
+			
+			if(new Rectangle(x,y,width,height).contains(block.posX, block.posY)){
+				blocksInRectangle.add(block);
+			}
+		}
+		
+		return blocksInRectangle;
+	}
+	
+	
+	public void deleteBlocks(List<Block> toBeRemoved){
+		for(WorldObject object: toBeRemoved){
+			blocks.remove(object);
+		}
+	}
+	
+	
+	public void deleteBlocksInRectangle(int x, int y, int width, int height){		
+		deleteBlocks(getBlocksInRectangle(x,y,width,height));
+		
+	}
+	
 }

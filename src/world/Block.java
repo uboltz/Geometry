@@ -8,25 +8,42 @@ import game.Constants;
 
 public class Block extends WorldObject{
 	
+	
+	public static final int 		
+	IMMOVABLE = 1,
+	MOVABLE = 2;
+	
 	public int width, height;
 	
 	/*
 	 * Constructs a rectangular block with the specified dimensions.
 	 */
-	private Block(int x, int y, int width, int height){
+	public static Block createBlock(int type, int x, int y, int width, int height){
 		
-		this.posX = x;
-		this.posY = y;
+		Block block = new Block(type);
 		
-		this.width = width;
-		this.height = height;
+		block.posX = x;
+		block.posY = y;
 		
-		this.isMovable = true;
-		this.hasGravity = true;
+		block.width = width;
+		block.height = height;
+		
+		return block;
 		
 	}
 	
 	public Block(){};
+	
+	public Block(int type){
+		if(type == MOVABLE){
+			this.isMovable = true;
+			this.hasGravity = true;
+		}
+		else if(type == IMMOVABLE){
+			this.isMovable = false;
+			this.hasGravity = false;			
+		}
+	}
 	
 	
 	public boolean contains(int x, int y){

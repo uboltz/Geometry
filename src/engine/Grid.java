@@ -19,15 +19,16 @@ public class Grid {
 	/*
 	 * returns the x-coordinate of the upper left corner of a point's cell
 	 */
-	public int getCellX(int x){
+	public int getCellCornerX(int x){
 		return (x / cellSize) * cellSize;
 	}
 	
 	/*
 	 * returns the y-coordinate of the upper left corner of a point's cell
 	 */
-	public int getCellY(int y){
+	public int getCellCornerY(int y){
 		return (y / cellSize) * cellSize;
 	}
+	
 
 }

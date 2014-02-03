@@ -38,7 +38,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 		level = new Level();
 		engine = new GraphicsEngine(level, screen);
 		physics = new Physics(level);
-		editor = new LevelEditor(level, screen);
+		editor = new LevelEditor(level, screen, this);
 		
 		gameWindow = new GameWindow(this);
 		
@@ -107,11 +107,11 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 				}
 			}
 			lastTime = new Date();
-			System.out.println("time: " + lastTime.getTime() + " remainder:" + remainingTime);	
+//			System.out.println("time: " + lastTime.getTime() + " remainder:" + remainingTime);	
 		}
 	}
 
-	private void drawScreen(){
+	public void drawScreen(){
 		engine.drawScreen(gameWindow.canvasGraphics);
 		gameWindow.repaint();
 	}
@@ -127,9 +127,31 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 		else {
 			editor.mousePressed(e);
 			drawScreen();
+		}		
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		
+		if(state == PLAYING){
+			state = PAUSED;
 		}
+		else {
+			editor.mouseReleased(e);
+			drawScreen();
+		}		
+	}
+	
+	@Override
+	public void mouseDragged(MouseEvent e) {
 		
-		
+		if(state == PLAYING){
+			state = PAUSED;
+		}
+		else {
+			editor.mouseDragged(e);
+			drawScreen();
+		}		
 	}
 	
 	
@@ -155,12 +177,6 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 		
 	}
 	
-	
-	@Override
-	public void mouseDragged(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
@@ -199,11 +215,5 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 		
 	}
 
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 }

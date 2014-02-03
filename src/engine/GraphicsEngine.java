@@ -33,6 +33,17 @@ public class GraphicsEngine {
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);
 
+		drawWorld(g);
+		
+		drawOverlay(g);
+		
+	}
+	
+	/*
+	 * draws the part of the world that is currently on screen
+	 */
+	private void drawWorld(Graphics g){
+		
 		for(Block block: level.blocks){
 
 			//draw object if one of its corners is inside the screen area
@@ -64,6 +75,12 @@ public class GraphicsEngine {
 			}
 
 		}
+	}
+
+	private void drawOverlay(Graphics g){
+		
+		g.setColor(Color.BLACK);
+		screen.drawOverlay(g);
 		
 	}
 

@@ -1,5 +1,6 @@
 package engine;
 
+import java.awt.Graphics;
 import java.awt.Rectangle;
 
 import game.Constants;
@@ -23,7 +24,17 @@ public class Screen {
 	private int displayedWidth = Constants.CANVAS_WIDTH;
 	private int displayedHeight = Constants.CANVAS_HEIGHT;
 	
-	public Grid grid = new Grid(Constants.GRID_CELL_SIZE);
+	public Grid grid = new Grid(Constants.GRID_CELL_SIZE);	
+	
+	public Selector selection = new Selector();
+	
+	
+	public void drawOverlay(Graphics g){
+		if(selection.isVisible){
+			Rectangle r = selection.getRectangle();
+			g.drawRect(r.x, r.y, r.width, r.height);
+		}
+	}
 	
 	
 	/*
@@ -90,6 +101,10 @@ public class Screen {
 		}
 	}
 	
+	public int getDistanceInWorld(int distance){
+		return distance * zoom;
+	}
+	
 	public int worldToScreenX(int x){
 		return (x - posX) / zoom; 
 	}
@@ -99,14 +114,40 @@ public class Screen {
 	}
 	
 	public int screenToCellX(int x){
-		return grid.getCellX(screenToWorldX(x));
+		return grid.getCellCornerX(screenToWorldX(x));
 	}
 	
 	public int screenToCellY(int y){
-		return grid.getCellY(screenToWorldY(y));
+		return grid.getCellCornerY(screenToWorldY(y));
 	}
 	
 	
+	public int screenToCellNumberX(int x){
+		if(screenToWorldX(x) < 0){
+			return (screenToWorldX(x) / grid.cellSize) - 1;		
+		}
+		else {
+			return screenToWorldX(x) / grid.cellSize;
+		}	
+	}
+	
+	public int screenToCellNumberY(int y){
+		if(screenToWorldY(y) < 0){
+			return (screenToWorldY(y) / grid.cellSize) - 1;		
+		}
+		else {
+			return screenToWorldY(y) / grid.cellSize;
+		}
+	}
+	
+	public int cellNumberToWorldX(int x){
+		return x * grid.cellSize;
+	}
+	
+	public int cellNumberToWorldY(int y){
+		return y * grid.cellSize;
+	}
+
 	/*
 	 * takes an x coordinate from the screen and returns the corresponding
 	 * coordinate in the world

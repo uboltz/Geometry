@@ -1,57 +1,164 @@
 package game;
 
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import engine.GraphicsEngine;
 import engine.Screen;
 
 import world.Block;
 import world.Level;
 
 public class LevelEditor{
-
-	public static final int 
-		MOVE = 0,
-		CREATE_IMMOVABLE = 1,
-		CREATE_MOVABLE = 2,
-		CREATE_CUSTOM = 3,
-		CREATE_DRAGGING = 4,
-		DELETE = 5;
-
 	
-	public int task = CREATE_IMMOVABLE;
+	
+	public Task task = Task.CREATE;
+	public int currentBlockType = Block.IMMOVABLE;
 	
 	private Level level;
 	private Screen screen;
+	private Main main;
 	
-	private boolean isGridEnabled = true;
+	public boolean isGridEnabled = true;
+
+
+
+	private enum Task {
+		MOVE_SELECT {
+			public void mousePressed(MouseEvent e, LevelEditor d){
+				d.screen.selection.mousePressed(e.getX(), e.getY());
+			}
+			public void mouseDragged(MouseEvent e, LevelEditor d){
+				//change selection rectangle
+				d.screen.selection.mouseDragged(e.getX(), e.getY());
+				d.main.drawScreen();
+			}
+			public void mouseReleased(MouseEvent e, LevelEditor d){
+				//change selected block's x,y; grid plays a role
+			}
+		},
+		MOVE_MOVE {
+
+			@Override
+			public void mouseDragged(MouseEvent e, LevelEditor d) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e, LevelEditor d) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e, LevelEditor d) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		},
+		CREATE {
+			public void mousePressed(MouseEvent e, LevelEditor d){
+				//store x,y
+				d.screen.selection.mousePressed(e.getX(), e.getY());
+
+			}
+			public void mouseDragged(MouseEvent e, LevelEditor d){
+				//change selection rectangle
+				d.screen.selection.mouseDragged(e.getX(), e.getY());
+				d.main.drawScreen();
+			}
+			public void mouseReleased(MouseEvent e, LevelEditor d){
+				//if grid is on, create multiple blocks with the same size
+				
+				Rectangle selection = d.screen.selection.getRectangle();
+				
+				for(int x = d.screen.screenToCellNumberX(selection.x);
+				x <= d.screen.screenToCellNumberX(selection.x + selection.width);
+				x++){
+					
+					for(int y = d.screen.screenToCellNumberY(selection.y);
+					y <= d.screen.screenToCellNumberY(selection.y + selection.height);
+					y++){
+						
+						Block block = Block.createBlock(
+								d.currentBlockType,
+								d.screen.cellNumberToWorldX(x),
+								d.screen.cellNumberToWorldY(y),							
+								d.screen.grid.cellSize,
+								d.screen.grid.cellSize);
+						
+						d.level.addBlock(block);
+						
+					}
+				}
+				
+				
+				//if grid is off, create single block
+				
+				
+				d.screen.selection.mouseReleased();
+			}
+		},
+		DELETE {
+			public void mousePressed(MouseEvent e, LevelEditor d){
+				//store x,y
+				d.screen.selection.mousePressed(e.getX(), e.getY());
+				
+			}
+			public void mouseDragged(MouseEvent e, LevelEditor d){
+				//change selection rectangle
+				d.screen.selection.mouseDragged(e.getX(), e.getY());
+				d.main.drawScreen();
+				
+			}
+			public void mouseReleased(MouseEvent e, LevelEditor d){
+				//delete everything within selection rectangle
+				d.deleteBlocksInScreenRectangle(d.screen.selection.getRectangle());
+				
+				d.screen.selection.mouseReleased();
+				d.main.drawScreen();
+			}
+		};
+		
+		public abstract void mousePressed(MouseEvent e, LevelEditor d);
+		public abstract void mouseDragged(MouseEvent e, LevelEditor d);
+		public abstract void mouseReleased(MouseEvent e, LevelEditor d);
+		
+		
+	}	
 	
 	
-	public LevelEditor(Level level, Screen screen){
+	public LevelEditor(Level level, Screen screen, Main main){
 		
 		this.level = level;
 		this.screen = screen;	
-
+		this.main = main;
+		
 	}
 
 	public void mousePressed(MouseEvent e){
-
-		switch(task){
-		case CREATE_IMMOVABLE : createImmovableBlockAt(e.getX(), e.getY());
-		break;		
-		case CREATE_MOVABLE : createMovableBlockAt(e.getX(), e.getY());
-		break;		
-		case DELETE : deleteBlocksAt(e.getX(), e.getY());
-		break;
-
-		}
-
+		task.mousePressed(e, this);
 	}
+	
+	public void mouseReleased(MouseEvent e){
+		task.mouseReleased(e, this);
+	}
+	
+	public void mouseDragged(MouseEvent e){
+		task.mouseDragged(e, this);
+	}
+	
+	
+	
 
 	public void keyPressed(KeyEvent e){
 
 		switch(e.getKeyCode()) {
+		//move screen
 		case KeyEvent.VK_LEFT: screen.moveX(-10);
 		break;
 		case KeyEvent.VK_RIGHT: screen.moveX(+10);
@@ -65,13 +172,23 @@ public class LevelEditor{
 		case KeyEvent.VK_A: screen.changeZoom(110);
 		break;
 
-		case KeyEvent.VK_S: task = CREATE_IMMOVABLE;
+		//decide what will happen at the next mouse click
+		case KeyEvent.VK_C: task = Task.CREATE;
 		break;
-		case KeyEvent.VK_M: task = CREATE_MOVABLE;
+		case KeyEvent.VK_M: task = Task.MOVE_SELECT;
 		break;
-		case KeyEvent.VK_D: task = DELETE;
+		case KeyEvent.VK_D: task = Task.DELETE;
 		break;
-
+		
+		//decide type of the next block that gets created
+		case KeyEvent.VK_N: currentBlockType = Block.MOVABLE;
+		break;
+		case KeyEvent.VK_I: currentBlockType = Block.IMMOVABLE;
+		break;
+		
+		case KeyEvent.VK_G: toggleGrid();
+		break;
+		
 		}
 
 	}
@@ -80,7 +197,7 @@ public class LevelEditor{
 		 * set a blocks dimensions in the world to the ones corresponding to
 		 * the input from the screen and add it to the world
 		 */
-		private void addBlockAt(Block block, int x, int y, int width, int height){			
+		private void addBlockOnScreen(Block block, int x, int y){			
 			
 			if(isGridEnabled){
 				
@@ -96,64 +213,18 @@ public class LevelEditor{
 			else {
 				block.posX = screen.screenToWorldX(x);
 				block.posY = screen.screenToWorldY(y);
-				block.width = width * screen.zoom;
-				block.height = height * screen.zoom;
+				block.width = screen.grid.cellSize;
+				block.height = screen.grid.cellSize;
 				level.addBlock(block);
 			}
 			
 		}
 		
-	
-		
-		private void createMovableBlockAt(int x, int y){
-			
-			createMovableBlockAt(x, y, screen.grid.cellSize, screen.grid.cellSize);		
-		}
-		
-		private void createImmovableBlockAt(int x, int y){
-
-			createImmovableBlockAt(x, y, screen.grid.cellSize, screen.grid.cellSize);		
-		}
-		
-		
-		private void createMovableBlockAt(int x, int y, int width, int height){
-			
-			addBlockAt(createMovableBlock(), x, y, width, height);
-			
-		}
-		
-		private void createImmovableBlockAt(int x, int y, int width, int height){
-			
-			addBlockAt(createImmovableBlock(), x, y, width, height);
-			
-		}
-		
-		
-		private Block createMovableBlock(){
-			
-			Block block = new Block();
-			block.hasGravity = true;
-			block.isMovable = true;
-			
-			return block;
-						
-		}
-		
-		public static Block createImmovableBlock(){
-			
-			Block block = new Block();
-			block.hasGravity = false;
-			block.isMovable = false;
-			
-			return block;
-		}
-		
-		
 		
 		/*
 		 * delete all blocks that contain the specified point on the given screen
 		 */
-		private void deleteBlocksAt(int x, int y){
+		private void deleteBlocksOnScreen(int x, int y){
 			
 			x = screen.screenToWorldX(x);
 			y = screen.screenToWorldY(y);
@@ -161,7 +232,25 @@ public class LevelEditor{
 		}
 		
 	
+		private void deleteBlocksInScreenRectangle(Rectangle r){
+			level.deleteBlocksInRectangle(
+					screen.screenToWorldX(r.x),
+					screen.screenToWorldY(r.y),
+					screen.getDistanceInWorld(r.width),
+					screen.getDistanceInWorld(r.height));
+		}
 	
+		/*
+		 * switches the grid on and off
+		 */
+		private void toggleGrid(){
+			if(isGridEnabled){
+				isGridEnabled = false;
+			}
+			else {
+				isGridEnabled = true;
+			}
+		}
 	
 
 }
