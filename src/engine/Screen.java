@@ -26,13 +26,18 @@ public class Screen {
 	
 	public Grid grid = new Grid(Constants.GRID_CELL_SIZE);	
 	
-	public Selector selection = new Selector();
+	public Arrow arrow = new Arrow();
+	public Selector selector = new Selector();
 	
 	
 	public void drawOverlay(Graphics g){
-		if(selection.isVisible){
-			Rectangle r = selection.getRectangle();
+		if(selector.isVisible){
+			Rectangle r = selector.getRectangle();
 			g.drawRect(r.x, r.y, r.width, r.height);
+		}
+		
+		if(arrow.isVisible){
+			g.drawLine(arrow.x1, arrow.y1, arrow.x2, arrow.y2);
 		}
 	}
 	
@@ -157,7 +162,7 @@ public class Screen {
 	}
 	
 	/*
-	 * takes ay y coordinate from the screen and returns the corresponding
+	 * takes a y coordinate from the screen and returns the corresponding
 	 * coordinate in the world
 	 */
 	public int screenToWorldY(int y){

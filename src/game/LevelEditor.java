@@ -4,9 +4,12 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import engine.GraphicsEngine;
 import engine.Screen;
+import engine.Selector;
 
 import world.Block;
 import world.Level;
@@ -22,40 +25,61 @@ public class LevelEditor{
 	private Main main;
 	
 	public boolean isGridEnabled = true;
+	
+	public List<Block> toBeMoved = new ArrayList<Block>();
 
 
 
 	private enum Task {
 		MOVE_SELECT {
 			public void mousePressed(MouseEvent e, LevelEditor d){
-				d.screen.selection.mousePressed(e.getX(), e.getY());
+				d.screen.selector.mousePressed(e.getX(), e.getY());
 			}
 			public void mouseDragged(MouseEvent e, LevelEditor d){
 				//change selection rectangle
-				d.screen.selection.mouseDragged(e.getX(), e.getY());
+				d.screen.selector.mouseDragged(e.getX(), e.getY());
 				d.main.drawScreen();
 			}
 			public void mouseReleased(MouseEvent e, LevelEditor d){
-				//change selected block's x,y; grid plays a role
+				//store selected blocks
+				Rectangle r = d.screen.selector.getRectangle();
+				d.toBeMoved = d.level.getBlocksInRectangle(
+						d.screen.screenToWorldX(r.x),
+						d.screen.screenToWorldY(r.y), 
+						d.screen.getDistanceInWorld(r.width), 
+						d.screen.getDistanceInWorld(r.height));
+				d.task = MOVE_MOVE;
 			}
 		},
 		MOVE_MOVE {
 
 			@Override
-			public void mouseDragged(MouseEvent e, LevelEditor d) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
 			public void mousePressed(MouseEvent e, LevelEditor d) {
-				// TODO Auto-generated method stub
-				
+				// store cursor x,y
+				d.screen.arrow.mousePressed(e.getX(), e.getY());
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e, LevelEditor d) {
+				// show preview
+				d.screen.arrow.mouseDragged(e.getX(), e.getY());			
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e, LevelEditor d) {
-				// TODO Auto-generated method stub
+				// change stored blocks' coordinates
+				
+				int changeX = d.screen.getDistanceInWorld(d.screen.arrow.x2 - d.screen.arrow.x1);
+				int changeY = d.screen.getDistanceInWorld(d.screen.arrow.y2 - d.screen.arrow.y1);
+				
+				for(Block block: d.toBeMoved){
+					block.posX += changeX;
+					block.posY += changeY;
+				}
+				
+				d.screen.arrow.mouseReleased();
+				d.screen.selector.mouseReleased();
+				d.task = MOVE_SELECT;
 				
 			}
 			
@@ -63,63 +87,48 @@ public class LevelEditor{
 		CREATE {
 			public void mousePressed(MouseEvent e, LevelEditor d){
 				//store x,y
-				d.screen.selection.mousePressed(e.getX(), e.getY());
+				d.screen.selector.mousePressed(e.getX(), e.getY());
 
 			}
 			public void mouseDragged(MouseEvent e, LevelEditor d){
 				//change selection rectangle
-				d.screen.selection.mouseDragged(e.getX(), e.getY());
+				d.screen.selector.mouseDragged(e.getX(), e.getY());
 				d.main.drawScreen();
 			}
 			public void mouseReleased(MouseEvent e, LevelEditor d){
 				//if grid is on, create multiple blocks with the same size
-				
-				Rectangle selection = d.screen.selection.getRectangle();
-				
-				for(int x = d.screen.screenToCellNumberX(selection.x);
-				x <= d.screen.screenToCellNumberX(selection.x + selection.width);
-				x++){
-					
-					for(int y = d.screen.screenToCellNumberY(selection.y);
-					y <= d.screen.screenToCellNumberY(selection.y + selection.height);
-					y++){
-						
-						Block block = Block.createBlock(
-								d.currentBlockType,
-								d.screen.cellNumberToWorldX(x),
-								d.screen.cellNumberToWorldY(y),							
-								d.screen.grid.cellSize,
-								d.screen.grid.cellSize);
-						
-						d.level.addBlock(block);
-						
-					}
+				if(d.isGridEnabled){
+					d.createBlocksInGrid(d.screen.selector);
+				}
+				//if grid is off, create single block
+				else {
+					d.createBlock(d.screen.selector);
 				}
 				
 				
-				//if grid is off, create single block
 				
 				
-				d.screen.selection.mouseReleased();
+				
+				d.screen.selector.mouseReleased();
 			}
 		},
 		DELETE {
 			public void mousePressed(MouseEvent e, LevelEditor d){
 				//store x,y
-				d.screen.selection.mousePressed(e.getX(), e.getY());
+				d.screen.selector.mousePressed(e.getX(), e.getY());
 				
 			}
 			public void mouseDragged(MouseEvent e, LevelEditor d){
 				//change selection rectangle
-				d.screen.selection.mouseDragged(e.getX(), e.getY());
+				d.screen.selector.mouseDragged(e.getX(), e.getY());
 				d.main.drawScreen();
 				
 			}
 			public void mouseReleased(MouseEvent e, LevelEditor d){
 				//delete everything within selection rectangle
-				d.deleteBlocksInScreenRectangle(d.screen.selection.getRectangle());
+				d.deleteBlocksInScreenRectangle(d.screen.selector.getRectangle());
 				
-				d.screen.selection.mouseReleased();
+				d.screen.selector.mouseReleased();
 				d.main.drawScreen();
 			}
 		};
@@ -192,33 +201,74 @@ public class LevelEditor{
 		}
 
 	}
-	
-		/*
-		 * set a blocks dimensions in the world to the ones corresponding to
-		 * the input from the screen and add it to the world
-		 */
-		private void addBlockOnScreen(Block block, int x, int y){			
+
+
+	private void createBlocksInGrid(Selector selector){
+		
+		Rectangle selection = selector.getRectangle();
+		
+		for(int x = screen.screenToCellNumberX(selection.x);
+		x <= screen.screenToCellNumberX(selection.x + selection.width);
+		x++){
 			
-			if(isGridEnabled){
+			for(int y = screen.screenToCellNumberY(selection.y);
+			y <= screen.screenToCellNumberY(selection.y + selection.height);
+			y++){
 				
-				block.posX = screen.screenToCellX(x);
-				block.posY = screen.screenToCellY(y);
-				block.width = screen.grid.cellSize;
-				block.height = screen.grid.cellSize;
+				Block block = Block.createBlock(
+						currentBlockType,
+						screen.cellNumberToWorldX(x),
+						screen.cellNumberToWorldY(y),							
+						screen.grid.cellSize,
+						screen.grid.cellSize);
+				
 				level.addBlock(block);
 				
-				
 			}
-			
-			else {
-				block.posX = screen.screenToWorldX(x);
-				block.posY = screen.screenToWorldY(y);
-				block.width = screen.grid.cellSize;
-				block.height = screen.grid.cellSize;
-				level.addBlock(block);
-			}
-			
 		}
+		
+	}
+	
+	private void createBlock(Selector selector){
+		
+		Block block = new Block(currentBlockType);
+		Rectangle selection = selector.getRectangle();
+		
+		block.posX = screen.screenToWorldX(selection.x);
+		block.posY = screen.screenToWorldY(selection.y);
+		block.width = screen.getDistanceInWorld(selection.width);
+		block.height = screen.getDistanceInWorld(selection.height);
+		
+		level.addBlock(block);
+		
+	}
+
+	/*
+	 * set a blocks dimensions in the world to the ones corresponding to
+	 * the input from the screen and add it to the world
+	 */
+	private void addBlockOnScreen(Block block, int x, int y){			
+
+		if(isGridEnabled){
+
+			block.posX = screen.screenToCellX(x);
+			block.posY = screen.screenToCellY(y);
+			block.width = screen.grid.cellSize;
+			block.height = screen.grid.cellSize;
+			level.addBlock(block);
+
+
+		}
+
+		else {
+			block.posX = screen.screenToWorldX(x);
+			block.posY = screen.screenToWorldY(y);
+			block.width = screen.grid.cellSize;
+			block.height = screen.grid.cellSize;
+			level.addBlock(block);
+		}
+
+	}
 		
 		
 		/*

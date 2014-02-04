@@ -57,7 +57,7 @@ public class GraphicsEngine {
 					g.setColor(Color.BLUE);
 				}
 				else {
-					g.setColor(Color.BLACK);
+					g.setColor(Color.GREEN);
 				}				
 				
 				g.fillRect(
