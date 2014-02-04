@@ -25,12 +25,15 @@ public class Screen {
 	private int displayedHeight = Constants.CANVAS_HEIGHT;
 	
 	public Grid grid = new Grid(Constants.GRID_CELL_SIZE);	
+	public boolean isGridEnabled = true;
 	
 	public Arrow arrow = new Arrow();
 	public Selector selector = new Selector();
 	
 	
 	public void drawOverlay(Graphics g){
+		
+		
 		if(selector.isVisible){
 			Rectangle r = selector.getRectangle();
 			g.drawRect(r.x, r.y, r.width, r.height);
@@ -193,6 +196,18 @@ public class Screen {
 		
 		return r.contains(x, y);
 		
+	}
+	
+	/*
+	 * switches the grid on and off
+	 */
+	public void toggleGrid(){
+		if(isGridEnabled){
+			isGridEnabled = false;
+		}
+		else {
+			isGridEnabled = true;
+		}
 	}
 
 }

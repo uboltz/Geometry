@@ -33,6 +33,8 @@ public class GraphicsEngine {
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);
 
+		drawGrid(g);
+		
 		drawWorld(g);
 		
 		drawOverlay(g);
@@ -77,11 +79,49 @@ public class GraphicsEngine {
 		}
 	}
 
+	
+	private void drawGrid(Graphics g){
+		if(screen.isGridEnabled){
+
+			g.setColor(Color.GRAY);
+
+			int x = screen.posX;
+
+			while(x < screen.posX + screen.getWidthInWorld()){
+				int lineX  = x / screen.grid.cellSize;
+
+				if (lineX == 0) {
+					System.out.println("zero");
+				}
+			
+				lineX *= screen.grid.cellSize;
+
+				g.drawLine(screen.worldToScreenX(lineX), 0,
+						screen.worldToScreenX(lineX), Constants.CANVAS_HEIGHT);
+
+				x += screen.grid.cellSize;
+			}
+
+			int y = screen.posY;
+
+			while(y < screen.posY + screen.getHeightInWorld()){
+				int lineY  = y / screen.grid.cellSize;
+
+				lineY *= screen.grid.cellSize;
+
+				g.drawLine(0, screen.worldToScreenY(lineY),
+						Constants.CANVAS_WIDTH, screen.worldToScreenY(lineY));
+
+				y += screen.grid.cellSize;
+			}
+		}
+	}
+
+
 	private void drawOverlay(Graphics g){
-		
-		g.setColor(Color.BLACK);
+
 		screen.drawOverlay(g);
-		
+
 	}
 
 }

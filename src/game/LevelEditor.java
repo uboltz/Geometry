@@ -24,7 +24,6 @@ public class LevelEditor{
 	private Screen screen;
 	private Main main;
 	
-	public boolean isGridEnabled = true;
 	
 	public List<Block> toBeMoved = new ArrayList<Block>();
 
@@ -97,7 +96,7 @@ public class LevelEditor{
 			}
 			public void mouseReleased(MouseEvent e, LevelEditor d){
 				//if grid is on, create multiple blocks with the same size
-				if(d.isGridEnabled){
+				if(d.screen.isGridEnabled){
 					d.createBlocksInGrid(d.screen.selector);
 				}
 				//if grid is off, create single block
@@ -195,7 +194,7 @@ public class LevelEditor{
 		case KeyEvent.VK_I: currentBlockType = Block.IMMOVABLE;
 		break;
 		
-		case KeyEvent.VK_G: toggleGrid();
+		case KeyEvent.VK_G: screen.toggleGrid();
 		break;
 		
 		}
@@ -249,7 +248,7 @@ public class LevelEditor{
 	 */
 	private void addBlockOnScreen(Block block, int x, int y){			
 
-		if(isGridEnabled){
+		if(screen.isGridEnabled){
 
 			block.posX = screen.screenToCellX(x);
 			block.posY = screen.screenToCellY(y);
@@ -290,17 +289,6 @@ public class LevelEditor{
 					screen.getDistanceInWorld(r.height));
 		}
 	
-		/*
-		 * switches the grid on and off
-		 */
-		private void toggleGrid(){
-			if(isGridEnabled){
-				isGridEnabled = false;
-			}
-			else {
-				isGridEnabled = true;
-			}
-		}
 	
 
 }
