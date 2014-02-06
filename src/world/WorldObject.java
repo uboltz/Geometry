@@ -7,6 +7,6 @@ public abstract class WorldObject {
 	
 	public int posX, posY;
 	
-	public boolean hasCollisions, isMovable, hasGravity;
+	public boolean hasCollisions, isMovable, hasGravity, isControlledByUser;
 
 }

@@ -26,9 +26,6 @@ public class LevelEditor{
 	
 	
 	public List<Block> toBeMoved = new ArrayList<Block>();
-
-
-
 	private enum Task {
 		MOVE_SELECT {
 			public void mousePressed(MouseEvent e, LevelEditor d){
@@ -192,6 +189,8 @@ public class LevelEditor{
 		case KeyEvent.VK_N: currentBlockType = Block.MOVABLE;
 		break;
 		case KeyEvent.VK_I: currentBlockType = Block.IMMOVABLE;
+		break;
+		case KeyEvent.VK_P: currentBlockType = Block.PLAYER;
 		break;
 		
 		case KeyEvent.VK_G: screen.toggleGrid();

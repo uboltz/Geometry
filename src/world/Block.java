@@ -11,7 +11,8 @@ public class Block extends WorldObject{
 	
 	public static final int 		
 	IMMOVABLE = 1,
-	MOVABLE = 2;
+	MOVABLE = 2,
+	PLAYER = 3;
 	
 	public int width, height;
 	
@@ -38,10 +39,17 @@ public class Block extends WorldObject{
 		if(type == MOVABLE){
 			this.isMovable = true;
 			this.hasGravity = true;
+			this.isControlledByUser = false;
 		}
 		else if(type == IMMOVABLE){
 			this.isMovable = false;
 			this.hasGravity = false;			
+			this.isControlledByUser = false;
+		}
+		else if(type == PLAYER){
+			this.isMovable = true;
+			this.hasGravity = true;
+			this.isControlledByUser = true;
 		}
 	}
 	

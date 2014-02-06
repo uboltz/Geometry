@@ -58,6 +58,7 @@ public class GameWindow extends JFrame{
 	    canvas.addMouseListener(main);
 	    canvas.addMouseMotionListener(main);
 	    canvas.addKeyListener(main);
+	    canvas.addKeyListener(main.input);
 	    
 	    
 	    //radio button group to select editor action

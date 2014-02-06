@@ -1,23 +1,21 @@
 package game;
 
-import java.awt.Rectangle;
+import engine.GraphicsEngine;
+import engine.Physics;
+import engine.Screen;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.Date;
-import java.util.List;
-
-import javax.swing.JFrame;
 
 import world.Level;
-import world.WorldObject;
-
-import engine.GraphicsEngine;
-import engine.Physics;
-import engine.Screen;
 
 public class Main implements MouseListener, MouseMotionListener, KeyListener{
 
@@ -31,6 +29,8 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 	private Level level;
 	private Screen screen;
 	private LevelEditor editor;
+	public KeyboardInput input;
+	public Controls controls;
 	
 	public Main(){
 		
@@ -39,6 +39,8 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 		engine = new GraphicsEngine(level, screen);
 		physics = new Physics(level);
 		editor = new LevelEditor(level, screen, this);
+		input = new KeyboardInput();
+		controls = new Controls(physics, input);
 		
 		gameWindow = new GameWindow(this);
 		
@@ -47,9 +49,32 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 	
 	public static void main(String[] args){
 	
-		Main m = new Main();
+//		Main m = new Main();
+//		
+//		m.play();
 		
-		m.play();
+		
+		try {
+			File f = new File("C:\\Program Files\\1&1 Surf-Stick\\log\\autoztemon.txt");
+			
+			FileReader in = new FileReader(f);
+			BufferedReader reader = new BufferedReader(in);
+			
+			
+			
+			
+			for(int i = 0; i < 200; i++){
+				String s = reader.readLine();
+				System.out.println(s);
+			}
+			
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		
+		
 		
 		
 	}
@@ -71,6 +96,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 				System.out.println("playing");
 				
 				//process user input
+				controls.processInput();
 
 				//process AI and physics
 				physics.performFrame();
@@ -107,7 +133,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 				}
 			}
 			lastTime = new Date();
-//			System.out.println("time: " + lastTime.getTime() + " remainder:" + remainingTime);	
+			System.out.println("time: " + lastTime.getTime() + " remainder:" + remainingTime);	
 		}
 	}
 
@@ -158,7 +184,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 	@Override
 	public void keyPressed(KeyEvent e) {
 		
-		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 
 			if(state == PLAYING) {
 				state = PAUSED;
@@ -169,49 +195,53 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener{
 
 		}	
 		
-		editor.keyPressed(e);
+		if(state == PAUSED) {
+			editor.keyPressed(e);
+			drawScreen();
+		}
 		
-		drawScreen();
+		
 
-		System.out.println("Screen at: " + screen.posX + " " + screen.posY + " Zoom: " + screen.zoom);
+		System.out.println("Screen at: " + screen.posX() + " " + screen.posY() 
+				+ " Zoom: " + screen.zoomFactor());
 		
 	}
 	
 
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		// 
 		
 	}
 
 
 	@Override
 	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
+		// 
 		
 	}
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
+		// 
 		
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		// 
 		
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		// 
 		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		// 
 		
 	}
 

@@ -15,20 +15,22 @@ import game.Constants;
 public class Screen {
 	
 	//position in game world
-	public int posX = 0, posY = 0;
+	private int posX = 0, posY = 0;
 	
 	//world pixels per screen pixel
-	public int zoom = Constants.STANDARD_ZOOM;
+	private int zoom = Constants.STANDARD_ZOOM;
 	
 	//screen size on canvas
 	private int displayedWidth = Constants.CANVAS_WIDTH;
 	private int displayedHeight = Constants.CANVAS_HEIGHT;
 	
-	public Grid grid = new Grid(Constants.GRID_CELL_SIZE);	
+	
 	public boolean isGridEnabled = true;
 	
 	public Arrow arrow = new Arrow();
 	public Selector selector = new Selector();
+
+	public Grid grid = new Grid(Constants.GRID_CELL_SIZE);
 	
 	
 	public void drawOverlay(Graphics g){
@@ -187,7 +189,7 @@ public class Screen {
 		return displayedHeight * zoom;
 	}
 	
-	/*
+	/**
 	 * Is a given point in the world on screen right now?
 	 */
 	public boolean containsInWorld(int x, int y){
@@ -196,6 +198,18 @@ public class Screen {
 		
 		return r.contains(x, y);
 		
+	}
+	
+	public int posX(){
+		return posX;
+	}
+	
+	public int posY(){
+		return posY;
+	}
+	
+	public int zoomFactor(){
+		return zoom;
 	}
 	
 	/*

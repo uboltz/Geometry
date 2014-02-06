@@ -4,6 +4,7 @@ import game.Constants;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 import world.Block;
 import world.Level;
@@ -28,8 +29,14 @@ public class GraphicsEngine {
 		
 	}
 
-	public void drawScreen(Graphics g){
+	public void drawScreen(Graphics graphics){
 
+		BufferedImage buffer = new BufferedImage(Constants.CANVAS_WIDTH,
+				Constants.CANVAS_HEIGHT,
+				BufferedImage.TYPE_4BYTE_ABGR);
+		
+		Graphics g = buffer.getGraphics();
+		
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);
 
@@ -38,6 +45,9 @@ public class GraphicsEngine {
 		drawWorld(g);
 		
 		drawOverlay(g);
+		
+		
+		graphics.drawImage(buffer, 0, 0, null);
 		
 	}
 	
@@ -65,15 +75,15 @@ public class GraphicsEngine {
 				g.fillRect(
 						screen.worldToScreenX(block.posX),
 						screen.worldToScreenY(block.posY),							
-						block.width / screen.zoom, 
-						block.height / screen.zoom);
+						block.width / screen.zoomFactor(), 
+						block.height / screen.zoomFactor());
 
 				g.setColor(Color.BLACK);
 				g.drawRect(
 						screen.worldToScreenX(block.posX),
 						screen.worldToScreenY(block.posY),							
-						block.width / screen.zoom, 
-						block.height / screen.zoom);
+						block.width / screen.zoomFactor(), 
+						block.height / screen.zoomFactor());
 			}
 
 		}
@@ -85,13 +95,12 @@ public class GraphicsEngine {
 
 			g.setColor(Color.GRAY);
 
-			int x = screen.posX;
+			int x = screen.posX();
 
-			while(x < screen.posX + screen.getWidthInWorld()){
+			while(x < screen.posX() + screen.getWidthInWorld()){
 				int lineX  = x / screen.grid.cellSize;
 
 				if (lineX == 0) {
-					System.out.println("zero");
 				}
 			
 				lineX *= screen.grid.cellSize;
@@ -102,9 +111,9 @@ public class GraphicsEngine {
 				x += screen.grid.cellSize;
 			}
 
-			int y = screen.posY;
+			int y = screen.posY();
 
-			while(y < screen.posY + screen.getHeightInWorld()){
+			while(y < screen.posY() + screen.getHeightInWorld()){
 				int lineY  = y / screen.grid.cellSize;
 
 				lineY *= screen.grid.cellSize;

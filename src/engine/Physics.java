@@ -32,6 +32,15 @@ public class Physics {
 
 	}
 	
+	public void moveCommand(int x, int y){
+		
+		for(Block block: level.blocks){
+			if(block.isControlledByUser){
+				move(block, x, y);
+			}
+		}
+		
+	}
 
 	private void move(Block block, int x, int y){
 		
