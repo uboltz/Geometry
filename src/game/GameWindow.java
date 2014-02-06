@@ -104,11 +104,5 @@ public class GameWindow extends JFrame{
 	    setVisible(true);
 	    
 	}
-	
-	private class test  {
-		
-		
-		
-	}
 
 }
